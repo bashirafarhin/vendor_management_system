@@ -68,7 +68,7 @@ const VendorsTable = () => {
       <h2 className="text-xl font-medium mb-4">Vendors</h2>
       <p className="text-sm font-medium">To delete mark the check box</p>
       <p className="text-sm font-medium mb-4">Only 3 rows will be fetched per page</p>
-      <Table columns={columns} data={tableData} setData={setTableData} />
+      {vendors && <Table columns={columns} data={tableData} setData={setTableData} />}
       <div className="my-3" onClick={() => setPage(prev => prev + 1)}>
         <Button disabled={noMoreVendors}>
           {noMoreVendors ? "No more vendors" : "Load more Vendors"}

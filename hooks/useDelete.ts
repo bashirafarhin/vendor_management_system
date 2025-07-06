@@ -1,17 +1,17 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 
-interface UseDeleteResult {
+interface UseDeleteResult<T> {
   loading: boolean;
   error: string | null;
-  deleteData: (url: string, payload: any) => Promise<any>;
+  deleteData: (url: string, payload: T) => Promise<unknown | null>;
 }
 
-export function useDelete(): UseDeleteResult {
+export function useDelete<T = unknown>(): UseDeleteResult<T> {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const deleteData = async (url: string, payload: any) => {
+  const deleteData = async (url: string, payload: T): Promise<unknown | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -20,15 +20,13 @@ export function useDelete(): UseDeleteResult {
         headers: {
           "Content-Type": "application/json",
         },
+        withCredentials: true,
       });
       return response.data;
     } catch (err) {
       const axiosError = err as AxiosError;
-      setError(
-        (axiosError.response?.data as any)?.error ||
-        axiosError.message ||
-        "Something went wrong"
-      );
+      const resData = axiosError.response?.data as { error?: string; message?: string } | undefined;
+      setError(resData?.error || resData?.message || axiosError.message || "Something went wrong");
       return null;
     } finally {
       setLoading(false);

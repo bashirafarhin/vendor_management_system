@@ -6,18 +6,8 @@ import Table from "./Table";
 import { useFetch } from "@/hooks/useFetch";
 import Loader from "./ui/Loader";
 import Button from "./ui/Button";
-
-interface Vendor {
-  _id: string;
-  vendorName: string;
-  bankAccountNumber: string;
-  bankName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  country: string;
-  zipCode: string;
-}
+import { Vendor } from "@/interface/Vendor/Vendor";
+import toast from "react-hot-toast";
 
 const columns: Column<Vendor>[] = [
   {
@@ -60,24 +50,25 @@ const VendorsTable = () => {
         setTableData((prev) => (page === 1 ? vendors : [...prev, ...vendors]));
       }
     }
-  }, [vendors]);
+  }, [vendors, page]);
+
+  useEffect(() => {
+  if (error) {
+    toast.error(error);
+  }
+}, [error]);
+
 
   if (loading) {
     return <Loader />;
   }
 
-  if (error) {
-    return <div>Error</div>;
-  }
-
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Vendors</h2>
-      <p className="text-md font-semibold mb-4">To delete mark the check box</p>
-      <p className="text-md font-semibold mb-4">Only 3 rows will be fetched per page</p>
-      {vendors && (
-        <Table columns={columns} data={tableData} setData={setTableData} />
-      )}
+      <h2 className="text-xl font-medium mb-4">Vendors</h2>
+      <p className="text-sm font-medium">To delete mark the check box</p>
+      <p className="text-sm font-medium mb-4">Only 3 rows will be fetched per page</p>
+      <Table columns={columns} data={tableData} setData={setTableData} />
       <div className="my-3" onClick={() => setPage(prev => prev + 1)}>
         <Button disabled={noMoreVendors}>
           {noMoreVendors ? "No more vendors" : "Load more Vendors"}

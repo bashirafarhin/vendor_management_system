@@ -7,6 +7,11 @@ interface UseFetchResult<T> {
   error: string | null;
 }
 
+type ErrorResponse = {
+  message?: string;
+  error?: string;
+};
+
 export function useFetch<T = unknown>(url: string): UseFetchResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -24,15 +29,19 @@ export function useFetch<T = unknown>(url: string): UseFetchResult<T> {
       try {
         const response = await axios.get<T>(url, {
           cancelToken: source.token,
+          withCredentials: true,
         });
         setData(response.data);
       } catch (err) {
-        const axiosError = err as AxiosError;
+        const axiosError = err as AxiosError<ErrorResponse>;
         if (axios.isCancel(err)) {
           console.log('Request canceled:', err.message);
         } else {
           setError(
-            (axiosError.response?.data as any)?.message || axiosError.message || 'Something went wrong'
+            axiosError.response?.data?.message ||
+            axiosError.response?.data?.error ||
+            axiosError.message ||
+            'Something went wrong'
           );
         }
       } finally {

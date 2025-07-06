@@ -7,8 +7,8 @@ export const VendorSchema = z.object({
     .min(1, 'Bank Account Number is required')
     .regex(/^\d+$/, 'Must be a valid number'),
   bankName: z.string().min(1, 'Bank Name is required'),
-  addressLine1: z.string().min(1, 'Address Line 1 is required'),
-  addressLine2: z.string().optional(),
+  addressLine1: z.string().optional(),
+  addressLine2: z.string().min(1, 'Address Line 2 is required'),
   city: z.string().optional(),
   country: z.string().optional(),
   zipCode: z

@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 
-export function usePut<T = any, R = any>(url: string) {
+type ErrorResponse = {
+  message?: string;
+  error?: string;
+};
+
+export function usePut<T = unknown, R = unknown>(url: string) {
   const [data, setData] = useState<R | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,19 +18,18 @@ export function usePut<T = any, R = any>(url: string) {
     try {
       const response = await axios.put<R>(url, body, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
       });
 
       setData(response.data);
       return response.data;
     } catch (err) {
-      const axiosError = err as AxiosError<any>;
-      if (axiosError.response?.data?.message) {
-        setError(axiosError.response.data.message);
-      } else {
-        setError(axiosError.message || 'Unexpected error');
-      }
+      const axiosError = err as AxiosError<ErrorResponse>;
+      const res = axiosError.response?.data;
+
+      setError(res?.message || res?.error || axiosError.message || 'Unexpected error');
     } finally {
       setLoading(false);
     }

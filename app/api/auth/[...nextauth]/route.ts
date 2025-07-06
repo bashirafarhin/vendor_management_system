@@ -9,6 +9,7 @@ const handler = NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  useSecureCookies: true,
   callbacks: {
     async signIn({}) {
       return true;
